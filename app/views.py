@@ -1,12 +1,18 @@
 from django.shortcuts import render, HttpResponse
 import json
 from app.models import *
+from app.forms import * 
 
 from django.views.decorators.csrf import csrf_exempt
 
 
 def home(req):
-	return render(req, 'templates/index.html')
+	# TODO in next iteration
+	games = Game.objects.order_by('?')[:100]
+	
+	return render(req, 'templates/home.html', {
+		'games': games,
+	})
 
 
 # Actually terrible security
@@ -14,7 +20,6 @@ def home(req):
 @csrf_exempt
 def scraper_add_game(req):
 	data = json.loads(req.body.decode())
-	# print(data)
 	game = Game.objects.create(
 		awayteam_name=data['awayTeam']['longName']+" "+data['awayTeam']['shortName'], 
 		hometeam_name=data['homeTeam']['longName']+" "+data['homeTeam']['shortName'],

@@ -1,0 +1,81 @@
+{% extends "templates/layout.html" %}
+
+{% block content %}
+
+
+<!-- Account Section -->
+    <section id="account">
+        <div class="container">
+            <div id="container_login">
+
+            <div id="container_signup">
+                <div class="row">
+                    <div class="col-lg-12 text-center">
+                        <h2>Sign Up</h2>
+                        <hr class="star-primary">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-8 col-lg-offset-2">
+                        <form name="signUp" id="signUpForm" action="." method="post">
+                        {% csrf_token %}
+
+                    {% if form.errors %}
+                    <div class="ui error message">
+                        {{ form.errors.password1 }}
+                        {% if form.errors.password2 %}
+                        <p>Error: Passwords didn't match! Make sure it's alphanumeric too</p>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+
+
+                        <div class="row control-group">
+                                <div class="form-group col-xs-12 floating-label-form-group controls floating-label-form-group-with-value">
+                                    <label>Email</label>
+                                    {{form.email}}
+                                    <p class="help-block text-danger"></p>
+                                </div>
+                            </div>
+
+                            <div class="row control-group">
+                                <div class="form-group col-xs-12 floating-label-form-group controls floating-label-form-group-with-value">
+                                    <label>Username</label>
+                                    {{form.username}}
+                                    <p class="help-block text-danger"></p>
+                                </div>
+                            </div>
+
+                            <div class="row control-group">
+                                <div class="form-group col-xs-12 floating-label-form-group controls floating-label-form-group-with-value">
+                                    <label>Password</label>
+                                    {{form.password1}}
+                                    <p class="help-block text-danger"></p>
+                                </div>
+                            </div>  
+
+                            <div class="row control-group">
+                                <div class="form-group col-xs-12 floating-label-form-group controls floating-label-form-group-with-value">
+                                    <label>Password confirmation</label>
+                                    {{form.password2}}
+                                    <p class="help-block text-danger"></p>
+                                </div>
+                            </div> 
+
+                            <br>
+                            <div id="signup_success"></div>
+                            <div class="row">
+                                <div class="form-group col-xs-12">
+                                    <button type="submit" class="btn btn-success btn-lg">Sign Up</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>    
+
+
+
+{% endblock %}

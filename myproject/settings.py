@@ -28,6 +28,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+REGISTRATION_OPEN = True
 
 # Application definition
 
@@ -122,5 +123,26 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.10/howto/static-files/
+
+STATIC_ROOT = path.join(BASE_DIR, 'static').replace('\\', '/')
+
+# URL prefix for static files.
+# Example: "http://media.lawrence.com/assets/"
+STATIC_URL = '/static/'
+
+# Additional locations of static files
+STATICFILES_DIRS = (
+    path.join(BASE_DIR, 'app', 'static'),
+)
+
+# List of finder classes that know how to find static files in
+# various locations.
+STATICFILES_FINDERS = (
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+    # 'pipeline.finders.PipelineFinder',
+)
+
+# STATICFILES_STORAGE = 'pipeline.storage.PipelineStorage'
 
 STATIC_URL = '/static/'
