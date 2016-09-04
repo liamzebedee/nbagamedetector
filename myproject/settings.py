@@ -124,7 +124,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.10/howto/static-files/
 
-STATIC_ROOT = path.join(BASE_DIR, 'static').replace('\\', '/')
+STATIC_ROOT = path.join(BASE_DIR, 'staticfiles').replace('\\', '/')
 
 # URL prefix for static files.
 # Example: "http://media.lawrence.com/assets/"
@@ -134,6 +134,8 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = (
     path.join(BASE_DIR, 'app', 'static'),
 )
+STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'
+
 
 # List of finder classes that know how to find static files in
 # various locations.
