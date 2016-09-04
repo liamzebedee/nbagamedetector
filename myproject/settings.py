@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'app'
 ]
 
 MIDDLEWARE = [
@@ -52,7 +53,7 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'myproject.urls'
 
-print(os.path.join(BASE_DIR, 'app/templates'),)
+# print(os.path.join(BASE_DIR, 'app/templates'),)
 
 TEMPLATES = [
     {
