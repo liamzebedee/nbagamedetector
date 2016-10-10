@@ -7,3 +7,4 @@ class Game(Model):
 	boxscore_url = TextField()
 	awayteam_name = CharField(max_length=100)
 	hometeam_name = CharField(max_length=100)
+	worth_watching = BooleanField()

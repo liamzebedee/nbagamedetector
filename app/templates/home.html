@@ -58,16 +58,8 @@
                 
                 {% for game in games %}
 
-
-<!-- 
-<div class="card">
-  <div class="container">
-    <h4><a href="{{ game.boxscore_url }}"<b>{{ game.hometeam_name }}</b> vs <b>{{ game.awayteam_name }}</b><</h4> 
-    <p>{{ game.time }}</p> 
-  </div>
-</div> -->
-
                 <div class="col-sm-4 portfolio-item game-card">
+                    Worth? {{ game.worth_watching }}
                     <a href="{{ game.boxscore_url }}" style="text-decoration: none;">
                         <h4>{{ game.hometeam_name }} vs {{ game.awayteam_name }}</h4>
                         <span>{{ game.time }}</span>

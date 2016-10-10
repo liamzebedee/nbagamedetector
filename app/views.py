@@ -24,7 +24,8 @@ def scraper_add_game(req):
 		awayteam_name=data['awayTeam']['longName']+" "+data['awayTeam']['shortName'], 
 		hometeam_name=data['homeTeam']['longName']+" "+data['homeTeam']['shortName'],
 		boxscore_url=data['gameInfo']['boxscoreUrl'],
-		time=data['gameInfo']['time']
+		time=data['gameInfo']['time'],
+		worth_watching=data['gameInfo']['worthWatching']
 	)
 
 	return HttpResponse("Fab.")

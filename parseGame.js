@@ -21,6 +21,8 @@ env({ html: content, done: function (errors, windowObj) {
 
 	console.log(JSON.stringify(data))
 
+	// return false;
+
 	// Now to POST the data to the Django API
 	request.post(
 	    'http://localhost:8000/api/scraped-games',
@@ -34,8 +36,6 @@ env({ html: content, done: function (errors, windowObj) {
 }});
 
 
-
-
 function parse($) {
 	let gameTime = $('title').text().split(' - ')[2];
 	const GAME_URL = $('meta[property="og:url"]').attr('content');
@@ -44,7 +44,8 @@ function parse($) {
 	let data = {
 		gameInfo: {
 			time: gameTime,
-			boxscoreUrl: GAME_URL
+			boxscoreUrl: GAME_URL,
+			worthWatching: null	
 		},
 
 		awayTeam: {
@@ -71,50 +72,93 @@ function parse($) {
 		shortName: shortNames[1]
 	}
 
-	// do the scores
-	// loop from 0:00 to 5:00 mins (so bottom-up)
-	let $plays = $($(`#gp-quarter-4 > table > tbody`).children().get().reverse());
+	// quarter 4 plays
+	let $plays = $($(`#gp-quarter-4 > table > tbody`).children().get());
+	
+	// plays from 5:00 to 0:00 mins
 	let $playsWeCareAbout = [];
 	let found = false;
 
 	$plays.each(function(i) {
 		let time = $('.time-stamp', this).text();
-		if(!found && time.startsWith('5')) {
+		if(!found && time.startsWith('4')) {
 			// we've hit the first recorded 5 minute mark.
-			$playsWeCareAbout = $($plays.splice(i, $plays.length-1));
+			$playsWeCareAbout = $($plays.splice(i-1, $plays.length));
 			found = true;
 		}
 	});
 
-	let plays = [];
+	let playsWeCareAbout = [];
 
 	$playsWeCareAbout.each(function(i) {
 		let time = $('.time-stamp', this).text();
 		let scores = $('.combined-score', this).text().split(' - ');
-		plays.push({
+		playsWeCareAbout.push({
 			time,
 			awayTeamScore: scores[0],
 			homeTeamScore: scores[1]
 		})
 	})
 
+
+	function isOvertime() {
+		return $('#gp-quarter-5') == null;
+	}
 	
-	// function isLeadChange(plays) {
-	// 	let lead = Math.max(plays[0]
+	function atOneMinuteToGoTheScoreIsWithin5() {
+		for(let i = 0; i < playsWeCareAbout.length; i++) {
+			let play = playsWeCareAbout[i]
+			if(play.time.startsWith('1')) {
+				return Math.abs(play.awayTeamScore - play.homeTeamScore) < 5;
+			}
+		}
+		throw new Error("shouldnt get here");
+	}
 
-	// 	plays.forEach((play) => {
+	function endScoreWithin3() {
+		let play = playsWeCareAbout[0];
+		return Math.abs(play.homeTeamScore - play.awayTeamScore) < 3;
+	}
 
-	// 	})
-	// }
+	function leadChange() {
+		let playAt3Min, endPlay;
 
-	// function isGameWorthWatching(plays) {
-	// 	return isLeadChange(plays);
-	// }
+		for(let i = 0; i < playsWeCareAbout.length; i++) {
+			let play = playsWeCareAbout[i]
+			console.log(play.time)
+			if(play.time.startsWith('3')) {
+				playAt3Min = play;
+			}
+		}
 
+		endPlay = playsWeCareAbout[0];
 
-	// let worth = isGameWorthWatching(plays)
-	// if(worth) console.log(`WORTH IT ${GAME_URL}`)
+		let diffat3mins = playAt3Min.awayTeamScore - playAt3Min.homeTeamScore
+		let diffatend = endPlay.awayTeamScore - endPlay.homeTeamScore
 
-	// console.log(JSON.stringify(data))
+		return (diffat3mins * diffatend) < 0; 
+	}
+
+	function isGameWorthWatching() {
+		let metrics = [
+			{ name: "Overtime", result: isOvertime() },
+			{ name: "Close score in last 5min", result: atOneMinuteToGoTheScoreIsWithin5() },
+			{ name: "Change in lead", result: leadChange() },
+			{ name: "End score within 3", result: endScoreWithin3() },
+		]
+
+		metrics.map(metric => {
+			if(metric.result)
+				console.log(`${metric.name}`)
+		})
+
+		return metrics.reduce(
+			(initialValue, currentValue) => (initialValue || currentValue.result), 
+			false
+		)
+	}
+
+	data.gameInfo.worthWatching = isGameWorthWatching()
+
 	return data;
 }

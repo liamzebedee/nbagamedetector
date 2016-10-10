@@ -13,7 +13,7 @@ class MainTest(TestCase):
 		pass
 
 	def test_post_new_game_from_scraper(self):
-		post_data = '{"gameInfo":{"time":"Today","boxscoreUrl":"http://www.espn.com.au/nba/playbyplay?gameId=400827947"},"awayTeam":{"longName":"Boston","shortName":"Celtics"},"homeTeam":{"longName":"Indiana","shortName":"Pacers"}}'
+		post_data = '{"gameInfo":{"time":"Today","boxscoreUrl":"http://www.espn.com.au/nba/playbyplay?gameId=400827947","worthWatching":true},"awayTeam":{"longName":"Boston","shortName":"Celtics"},"homeTeam":{"longName":"Indiana","shortName":"Pacers"}}'
 
 		response = self.client.post(reverse('scraper_add_game'), data=post_data, content_type='application/json')
 		last_instance = Game.objects.last()
@@ -22,3 +22,4 @@ class MainTest(TestCase):
 		self.assertEqual(last_instance.hometeam_name, "Indiana Pacers")
 		self.assertEqual(last_instance.awayteam_name, "Boston Celtics")
 		self.assertEqual(last_instance.time, "Today")
+		self.assertEqual(last_instance.worth_watching, True)
