@@ -1,47 +1,46 @@
 const jquery = require('jquery');
 const env = require('jsdom').env;
 const request = require('request');
+const fs = require('fs')
 
 
+console.log('Syntax: node parseGame [file]')
 
-console.log('Syntax: node scrapeGame [gameid] [gametime]')
+let file = process.argv[2]
 
-let gameId = +(process.argv[2]);
-let gameTime = process.argv[3]; // we just pass this through from Python, it's not actually used except in output
-const GAME_URL = `http://www.espn.com.au/nba/playbyplay?gameId=${gameId}`;
+console.log("Parsing file...")
 
+let content = fs.readFileSync(file, { encoding: 'utf-8'})
 
-console.log(`Scraping from ${GAME_URL}`)
-request(GAME_URL, function (error, response, body) {
-  if (!error && response.statusCode == 200) {
+env({ html: content, done: function (errors, windowObj) {
+	if(errors) {
+		throw new Error(errors);
+	}
 
-		env({ html: body, done: function (errors, windowObj) {
-			if(errors) {
-				throw new Error(errors);
-			}
+	let data = parse(jquery(windowObj));
 
-			let data = parse(jquery(windowObj));
+	console.log(JSON.stringify(data))
 
-			console.log(JSON.stringify(data))
+	// Now to POST the data to the Django API
+	request.post(
+	    'http://localhost:8000/api/scraped-games',
+	    {json:data},
+	    function(error, response, body) {
+	        console.log(error, ' ', response.statusCode)
+	    }
+	);
 
-			// Now to POST the data to the Django API
-			request.post(
-			    'http://localhost:8000/api/scraped-games',
-			    {json:data},
-			    function(error, response, body) {
-			        console.log(error, ' ', response.statusCode)
-			    }
-			);
-
-			windowObj.close();
-		}});
+	windowObj.close();
+}});
 
 
-  }
-})
 
 
 function parse($) {
+	let gameTime = $('title').text().split(' - ')[2];
+	const GAME_URL = $('meta[property="og:url"]').attr('content');
+
+
 	let data = {
 		gameInfo: {
 			time: gameTime,
@@ -72,8 +71,6 @@ function parse($) {
 		shortName: shortNames[1]
 	}
 
-	
-/*
 	// do the scores
 	// loop from 0:00 to 5:00 mins (so bottom-up)
 	let $plays = $($(`#gp-quarter-4 > table > tbody`).children().get().reverse());
@@ -100,7 +97,7 @@ function parse($) {
 			homeTeamScore: scores[1]
 		})
 	})
-*/
+
 	
 	// function isLeadChange(plays) {
 	// 	let lead = Math.max(plays[0]

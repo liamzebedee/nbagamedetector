@@ -1,0 +1,5 @@
+data/*
+env/*
+app/__pycache__/*
+myproject/__pycache__/*	
+node_modules/*
