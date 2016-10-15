@@ -24,7 +24,7 @@
                     <div class="ui error message">
                         {{ form.errors.password1 }}
                         {% if form.errors.password2 %}
-                        <p>Error: Passwords didn't match! Make sure it's alphanumeric too</p>
+                        <p>Error: Passwords didn't match! Make sure it's alphanumeric too and at least 8 characters</p>
                         {% endif %}
                     </div>
                     {% endif %}

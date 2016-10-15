@@ -7,8 +7,7 @@ from django.views.decorators.csrf import csrf_exempt
 
 
 def home(req):
-	# TODO in next iteration
-	games = Game.objects.order_by('?')[:100]
+	games = Game.objects.order_by('-date')[:100]
 	
 	return render(req, 'templates/home.html', {
 		'games': games,
